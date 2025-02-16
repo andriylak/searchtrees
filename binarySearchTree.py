@@ -2,19 +2,13 @@ from collections import deque
 
 
 class BinarySearchTree:
-    def __init__(self, value = None, left = None, right = None):
+    def __init__(self, key = None, value = None, left = None, right = None):
+        self.key = key
         self.value = value
         self.left = left
         self.right = right
-
-class AVLTree:
     
-    def __init__(self, key, value, auxiliary_data, left = None, right = None):
-        self.key = key
-        self.value = value 
-        self.left = left
-        self.right = right
-
+    # returns the list of elements in pre-order traversal
     def preorder(self):
         if self == None:
             return []
@@ -29,6 +23,7 @@ class AVLTree:
                 stack.append(node.left)
         return result
 
+    # returns the list of elements in in-order traversal 
     def inorder(self):
         if self == None:
             return []
@@ -45,6 +40,7 @@ class AVLTree:
                 node = node.right
         return result
 
+    # returns the list of elements in post-order traversal
     def postorder(self):
         if self == None:
             return []
@@ -59,12 +55,13 @@ class AVLTree:
                 else:
                     stack.append(node)
                     visited.append(True)
-                    stack.append(node.left)
-                    visited.append(False)
                     stack.append(node.right)
                     visited.append(False)
+                    stack.append(node.left)
+                    visited.append(False)
         return result
-    
+
+    # returns the list of elements in level-order traversal
     def levelorder(self):
         if self == None:
             return []
@@ -78,8 +75,44 @@ class AVLTree:
             if node.right:
                 queue.append(node.right)
         return result
-
+    
+    # delete all nodes from the tree.
     def clear(self):
+        if self == None:
+            return
+        stack = [self]
+        visited = [False]
+        while stack:
+            node, vis = stack.pop(), visited.pop()
+            if node:
+                if vis:
+                    # del node
+                    node = None
+                else:
+                    stack.append(node)
+                    visited.append(True)
+                    stack.append(node.right)
+                    visited.append(False)
+                    stack.append(node.left)
+                    visited.append(False)
+        return self
+
+    # returns k-th biggest element of the tree
+    def kthLargestElement(self, k):
+        stack = []
+        node = self
+        kthLargest = None
+        while (stack or node) and k > 0:
+            if node:
+                stack.append(node)
+                node = node.right
+            else:
+                node = stack.pop()
+                k -= 1
+                node = node.left
+        if k > 0:
+            return None
+        return node.key
         
     # returns the number of nodes in the tree.
     def size(self):
@@ -99,8 +132,8 @@ class AVLTree:
     # returns True if the size of the tree is equal zero.
     def empty(self):
         if self != None:
-            return True
-        return False
+            return False
+        return True
 
     # returns value of the key if exists or it returns None if key does not exist
     def elementAccess(self, target_key):
@@ -128,7 +161,9 @@ class AVLTree:
 
     
     # return the smallest key
-    def findmin(self):                    
+    def findmin(self):
+        if self == None:
+            return None
         node = self
         while node.left:
             node = node.left
@@ -136,6 +171,8 @@ class AVLTree:
     
     # return the largest key
     def findmax(self):
+        if self == None:
+            return None
         node = self
         while node.right:
             node = node.right
@@ -164,8 +201,3 @@ class AVLTree:
             else:
                 current = current.right
         return successor
-
-            
-    def insert(self, key, value):
-
-    def delete(self, key, value):
