@@ -9,26 +9,26 @@ class TestTreeNode(unittest.TestCase):
         self.single_node = T(1, value="A")
         self.tree = T(5, "A", T(3, "B", T(1, "C"), T(4, "D")), T(8, "E", None, T(9, "F")))
 
-    def test_preOrder(self):
+    def test_pre_order(self):
         self.assertEqual(self.empty_tree.preorder(), [])
-        self.assertEqual(self.single_node.preorder(), [1])
-        self.assertEqual(self.tree.preorder(), [5, 3, 1, 4, 8, 9])
+        self.assertEqual(self.single_node.preorder(), [(1, "A")])
+        self.assertEqual(self.tree.preorder(), [(5, "A"), (3, "B"), (1, "C"), (4, "D"), (8, "E"), (9, "F")])
    
     def test_in_order(self):
         self.assertEqual(self.empty_tree.inorder(), [])
-        self.assertEqual(self.single_node.inorder(), [1])
-        self.assertEqual(self.tree.inorder(), [1, 3, 4, 5, 8, 9])
+        self.assertEqual(self.single_node.inorder(), [(1, "A")])
+        self.assertEqual(self.tree.inorder(), [(1, "C"), (3, "B"), (4, "D"), (5, "A"), (8, "E"), (9, "F")])
 
     def test_post_order(self):
-        self.assertEqual(self.empty_tree.inorder(), [])
-        self.assertEqual(self.single_node.inorder(), [1])
-        self.assertEqual(self.tree.postorder(), [1, 4, 3, 9, 8, 5])
+        self.assertEqual(self.empty_tree.postorder(), [])
+        self.assertEqual(self.single_node.postorder(), [(1, "A")])
+        self.assertEqual(self.tree.postorder(), [(1, "C"), (4, "D"), (3, "B"), (9, "F"), (8, "E"), (5, "A")])
 
     def test_level_order(self):
         self.assertEqual(self.empty_tree.levelorder(), [])
-        self.assertEqual(self.single_node.levelorder(), [1])
-        self.assertEqual(self.tree.levelorder(), [5, 3, 8, 1, 4, 9])
-
+        self.assertEqual(self.single_node.levelorder(), [(1, "A")])
+        self.assertEqual(self.tree.levelorder(), [(5, "A"), (3, "B"), (8, "E"), (1, "C"), (4, "D"), (9, "F")])
+    
     def test_find_existing_key(self):
         self.assertEqual(self.single_node.find(1), TreeNode(1))
         self.assertEqual(self.tree.find(3), TreeNode(3, "A", TreeNode(1), TreeNode(4))) 
