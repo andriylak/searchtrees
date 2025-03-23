@@ -11,7 +11,7 @@ class TreeNode:
     A class representing a node in a tree structure.
 
     Each node contains a key, a value, and references to its left and right children.
-    Additional metadata, such as `metaValue`, can also be stored for advanced tree operations.
+    Additional metadata, such as `metaValue`, can also be stored for calculating auxiliary data in some node.
 
     Attributes:
         key: The key associated with the node. Defaults to None.
@@ -41,7 +41,7 @@ class TreeNode:
         self.value = value
         self.left = left
         self.right = right
-        self.metaValue = None
+        self._metaValue = None
 
     def __repr__(self) -> str:
         """
@@ -355,16 +355,16 @@ class TreeRoot:
         if target_node is None:
             return None
         for node in target_node.postorder():
-            node.metaValue = func(
-                left_subtree=node.left.metaValue if node.left else None,
-                right_subtree=node.right.metaValue if node.right else None,
+            node._metaValue = func(
+                left_subtree=node.left._metaValue if node.left else None,
+                right_subtree=node.right._metaValue if node.right else None,
                 node_value=node.value,
             )
             if node.left:
-                node.left.metaValue = None
+                node.left._metaValue = None
             if node.right:
-                node.right.metaValue = None
-        return target_node.metaValue
+                node.right._metaValue = None
+        return target_node._metaValue
 
     def getPreorder(self) -> list[tuple[T]]:
         """

@@ -41,11 +41,7 @@ class AVLTreeNode(TreeNode):
             left: The left child of the node.
             right: The right child of the node.
         """
-        self.key = key
-        self.value = value
-        self.left = left
-        self.right = right
-        self.metaValue = None
+        super().__init__(key, value, left, right)
         self.height = 1
 
 class AVLtree(TreeRoot):
@@ -168,7 +164,8 @@ class AVLtree(TreeRoot):
             tree2 (AVLtree): The second AVL tree to be merged.
 
         Returns:
-            AVLtree: A new balanced AVL tree containing all key-value pairs from both input trees.
+            AVLtree: A new balanced AVL tree containing all key-value pairs from both input trees. The 
+            comparator of a new tree is the same with the comparator in tree1.
         """
         merged_tree = AVLtree(comparator=tree1.comparator)
         for (key, value) in tree1:
