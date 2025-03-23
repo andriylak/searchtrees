@@ -1,143 +1,256 @@
-from collections import deque
-from binarySearchTree import TreeNode
+from binarySearchTree import TreeRoot, TreeNode
 from typing import Any, TypeVar, Union, Callable
+from functools import cmp_to_key, partial
 
 
 T = TypeVar("T")
 
-class AVLtree(TreeNode):
-    def __init__(self, key=None, left=None, right=None, value=None, comparator = None):
-        super().__init__(key, value, left, right)
+def first_element_comparator(comparator: Callable[[T], int], a: tuple, b: tuple)->int:
+     """
+     A comparator function that compares the first elements of two tuples.
+     """
+     return comparator(a[0], b[0])
+
+class AVLTreeNode(TreeNode):
+    """
+    A class representing a node in an AVL tree.
+
+    This class extends the TreeNode class to include height information for balancing.
+
+    Attributes:
+        key: The key of the node.
+        value: The value of the node.
+        left: The left child of the node.
+        right: The right child of the node.
+        metaValue: Optional metadata associated with the node.
+        height (int): The height of the node in the AVL tree.
+    """
+    def __init__(
+        self,
+        key: Union[T , None] = None,
+        value: Union [T , None] = None,
+        left: Union["TreeNode" , None] = None,
+        right: Union["TreeNode" , None] = None,
+    ):
+        """
+        Initialize an AVL tree node.
+
+        Args:
+            key: The key of the node.
+            value: The value of the node.
+            left: The left child of the node.
+            right: The right child of the node.
+        """
+        self.key = key
+        self.value = value
+        self.left = left
+        self.right = right
+        self.metaValue = None
         self.height = 1
+
+class AVLtree(TreeRoot):
+    """
+    A class representing an AVL tree, a self-balancing binary search tree.
+
+    This class extends the TreeRoot class to provide AVL tree functionality, including
+    insertion, deletion, and balancing operations.
+
+    Attributes:
+        root (Union[TreeNode, None]): The root node of the AVL tree.
+        comparator (Callable[[T], int]): A function to compare two keys.
+        metaValue (Any): Optional metadata associated with the tree.
+    """
+
+    def __init__(self, root: Union["TreeNode", None] = None, comparator: Callable[[T], int] | None = None):
+        """
+        Initialize an AVL tree.
+
+        Args:
+            root: The root node of the AVL tree.
+            comparator: A function to compare two keys.
+        """
+        super().__init__(root, comparator)
         self.metaValue = None
 
     def __repr__(self):
+        """
+        Returns a string representation of the AVL tree.
+
+        Returns:
+            str: A string representation of the tree.
+        """
         return super().__repr__()
 
     def insert(self, new_key: T, new_value: T) -> "AVLtree":
         """
         Inserts a new key-value pair into the AVL tree.
-        :param new_key: The key of the new node.
-        :param new_value: The value of the new node.
-        
-        Returns the root of the balanced AVL tree after insertion.
+
+        Args:
+            new_key: The key of the new node.
+            new_value: The value of the new node.
+
+        Returns:
+            AVLtree: The root of the balanced AVL tree after insertion.
         """
         if self.empty():
-            self.key, self.value = new_key, new_value
-            return self
-        elif self.comparator(self.key, new_key) == 0:
-            raise KeyError("The key with the same weight is already in the tree") 
-        elif self.comparator(self.key, new_key) > 0:
-            if self.left:
-                self.left = self.left.insert(new_key, new_value)
-            else:
-                self.left = AVLtree(key = new_key, value = new_value, comparator = self.comparator)
+            self.root = AVLTreeNode(new_key, new_value)
         else:
-            if self.right:
-                self.right = self.right.insert(new_key, new_value)
-            else:
-                self.right = AVLtree(key = new_key, value = new_value, comparator = self.comparator)
-        return self.balance()
+            self.root = self._insert_recursive(self.root, new_key, new_value)
+    
+    def _insert_recursive(self, node: "TreeNode", new_key: T, new_value: T) -> "AVLTreeNode":
+        """
+        Helper method. Recursively inserts a new key-value pair into the AVL tree.
+
+        Args:
+            node (AVLTreeNode): The current node in the recursion.
+            new_key: The key of the new node.
+            new_value: The value of the new node.
+
+        Returns:
+            AVLTreeNode: The root of the balanced subtree after insertion.
+        """
+        if not node:
+            return AVLTreeNode(new_key, new_value)
+        elif self.comparator(node.key, new_key) == 0:
+            return node
+        elif self.comparator(node.key, new_key) > 0:
+            node.left = self._insert_recursive(node.left, new_key, new_value)
+        else:
+            node.right = self._insert_recursive(node.right, new_key, new_value)
+        return self._balance(node)
 
     def delete(self, key: T) -> "AVLtree":
         """
         Deletes a node with the specified key from the AVL tree.
-        
-        If the key is found, the node is removed, and the tree is rebalanced to maintain the AVL property.
-        If the key is not found, the tree remains unchanged.
-        
-        :param key:The key of the node to be deleted.
 
-        Returns the root of the balanced AVL tree after deletion. If the tree becomes empty, returns `None`.
+        Args:
+            key (T): The key of the node to be deleted.
+
+        Returns:
+            AVLtree: The root of the balanced AVL tree after deletion.
         """
-        compare_value = self.comparator(self.key, key) 
-        if compare_value > 0 and self.left:
-            self.left = self.left.delete(key)
-        elif compare_value < 0 and self.right:
-            self.right = self.right.delete(key)
-        elif compare_value == 0:
-            if self.left is None and self.right is None:
-                return None
-            elif self.left is None:
-                temp = self.right
-                self = None
-                return temp
-            elif self.right is None:
-                temp = self.left
-                sef = None
-                return temp
-            successor = self.next(key)
-            self.key, self.value = successor.key, successor.value
-            self.right = self.right.delete(successor.key)
+        if self.empty():
+            pass
         else:
-            return self
-        return self.balance()
-    
+            self.root = self._delete_recursive(self.root, key)
+
+    def _delete_recursive(self, node: "TreeNode", key: T) -> "AVLTreeNode":
+        """
+        Recursively deletes a node with the specified key from the AVL tree.
+
+        Args:
+            node (AVLTreeNode): The current node in the recursion.
+            key: The key of the node to be deleted.
+
+        Returns:
+            TreeNode: The root of the balanced subtree after deletion.
+        """
+        if not node:
+            return node
+        elif self.comparator(node.key, key) > 0:
+            node.left = self._delete_recursive(node.left, key)
+        elif self.comparator(node.key, key) < 0:
+            node.right = self._delete_recursive(node.right, key)
+        else:
+            if node.left is None and node.right is None:
+                return None
+            elif node.left is None:
+                temp = node.right
+                node = None
+                return temp
+            elif node.right is None:
+                temp = node.left
+                node = None
+                return temp
+            successor = self.next(node, key)
+            node.key, node.value = successor.key, successor.value
+            node.right = self._delete_recursive(node.right, successor.key)
+        if not node:
+            return node
+        return self._balance(node)
+
     def merge(self, tree1: "AVLtree", tree2: "AVLtree") -> "AVLtree":
         """
         Merges two AVL trees into a single balanced AVL tree.
-        
-        :param tree1 (AVLtree): The first AVL tree to be merged.
-        :param tree2 (AVLtree): The second AVL tree to be merged.
 
-        Returns a new balanced AVL tree containing all key-value pairs from both input trees.
-        If both input trees are empty, returns an empty AVL tree.
+        Args:
+            tree1 (AVLtree): The first AVL tree to be merged.
+            tree2 (AVLtree): The second AVL tree to be merged.
+
+        Returns:
+            AVLtree: A new balanced AVL tree containing all key-value pairs from both input trees.
         """
-        in_order_1 = tree1.inorder()
-        in_order_2 = tree2.inorder()
+        in_order_1 = tree1.getInorder()
+        in_order_2 = tree2.getInorder()
+        if tree1.comparator != tree2.comparator:
+            custom_comparator = cmp_to_key(partial(first_element_comparator, tree1.comparator))
+            in_order_2 = sorted(tree2.getInorder(), key=custom_comparator)
         if len(in_order_1) == 0 and len(in_order_2) == 0:
-            return AVLtree()
-        merged_list = self.mergeList(in_order_1, in_order_2)
-        return self.buildTheBalancedTree(merged_list)
+            return AVLtree(comparator=tree1.comparator)
+        merged_list = self.mergeList(in_order_1, in_order_2, tree1.comparator)
+        return self.buildTheBalancedTree(merged_list, tree1.comparator)
 
-    def buildTheBalancedTree(self, sorted_array:list [tuple[T]]) -> "AVLtree":
+    def buildTheBalancedTree(self, sorted_array: list[tuple[T]], comparator:Callable[[T], int]) -> "AVLtree":
         """
         Constructs a balanced AVL tree from a sorted array of key-value pairs.
-        
-        :param sorted_array: A sorted list of tuples, where each tuple contains a key and its
-        corresponding value.
 
-        Returns: The root of the newly constructed balanced AVL tree.
-        """
-        return self.buildTheBalancedTree_helper(sorted_array, 0, len(sorted_array) - 1)
-    
-    def buildTheBalancedTree_helper(self, sorted_array: list[tuple[T]], start: int, end: int) -> "AVLtree":
-        """
-        Build the balanced tree from the sorted array. Helper method for buildTheBalancedTree.
-        
-        :param sorted_array: A sorted list of tuples, where each tuple contains a key and its
-        corresponding value.
-        :param start: The starting index of the current range in the sorted array.
-        :param end: The ending index of the current range in the sorted array.
+        Args:
+            sorted_array: A sorted list of tuples, where each tuple contains a key and its corresponding value.
+            comparator (Callable): The comparator function to use for key comparisons.
 
+        Returns:
+            AVLtree: The root of the newly constructed balanced AVL tree.
+        """
+        start, end = 0, len(sorted_array) - 1
+        middle = (start + end) // 2
+        tree = AVLtree(comparator=comparator)
+        tree.root = AVLTreeNode(key=sorted_array[middle][0], value=sorted_array[middle][1])
+        tree.root.left = self._buildTheBalancedTree_helper(sorted_array, start, middle - 1)
+        tree.root.right = self._buildTheBalancedTree_helper(sorted_array, middle + 1, end)
+        self._updateHeight(tree.root)
+        return tree
+
+    def _buildTheBalancedTree_helper(self, sorted_array: list[tuple[T]], start: int, end: int) -> "AVLTreeNode":
+        """
+        Helper method for building a balanced AVL tree from a sorted array.
+
+        Args:
+            sorted_array: A sorted list of tuples, where each tuple contains a key and its corresponding value.
+            start (int): The starting index of the current range in the sorted array.
+            end (int): The ending index of the current range in the sorted array.
+
+        Returns:
+            AVLTreeNode: The root of the balanced subtree.
         """
         if start > end:
             return None
         middle = (start + end) // 2
-        node = AVLtree(key = sorted_array[middle][0], value = sorted_array[middle][1])
-        node.left = self.buildTheBalancedTree_helper(sorted_array, start, middle - 1)
-        node.right = self.buildTheBalancedTree_helper(sorted_array, middle + 1, end)
-        self.updateHeight(node)
+        node = AVLTreeNode(key=sorted_array[middle][0], value=sorted_array[middle][1])
+        node.left = self._buildTheBalancedTree_helper(sorted_array, start, middle - 1)
+        node.right = self._buildTheBalancedTree_helper(sorted_array, middle + 1, end)
+        self._updateHeight(node)
         return node
-    
+
     @staticmethod
-    def mergeList(array1: list[tuple[T]], array2: list[tuple[T]]) -> list[tuple[T]]:
+    def mergeList(array1: list[tuple[T]], array2: list[tuple[T]], comparator: Callable[[T], int]) -> list[tuple[T]]:
         """
         Merges two sorted lists of key-value pairs into a single sorted list.
 
-        :param array1: The first sorted list of key-value pairs.
-        :param array2: The second sorted list of key-value pairs.
+        Args:
+            array1: The first sorted list of key-value pairs.
+            array2: The second sorted list of key-value pairs.
+            comparator (Callable): The comparator function to use for key comparisons.
 
-        Returns a new sorted list containing all key-value pairs from both input lists,
-        with duplicates removed.
+        Returns:
+            list: A new sorted list containing all key-value pairs from both input lists.
         """
-        i, j =  0, 0
+        i, j = 0, 0
         result = []
         while i < len(array1) and j < len(array2):
-            if array1[i][0] < array2[j][0]:
+            if comparator(array1[i][0], array2[j][0]) < 0:
                 result.append(array1[i])
                 i += 1
-            elif array1[i][0] > array2[j][0]:
+            elif comparator(array1[i][0], array2[j][0]) > 0:
                 result.append(array2[j])
                 j += 1
             else:
@@ -150,69 +263,98 @@ class AVLtree(TreeNode):
             result = result + array2[j:]
         return result
 
-    def balance(self) -> "AVLtree":
+    def _balance(self, node: "AVLTreeNode") -> "AVLTreeNode":
         """
         Balances the AVL tree at the current node.
-        """
-        self.height = 1 + max(self.getHeight(self.left),
-                              self.getHeight(self.right))
-        balance_factor = self.getHeight(self.left) - self.getHeight(self.right)
-        if balance_factor > 1:
-            if self.getHeight(self.left.left) - self.getHeight(self.left.right) < 0:
-                self.left = self.left.left_rotate()
-            return self.right_rotate()
-        elif balance_factor < -1:
-            if self.getHeight(self.right.left) - self.getHeight(self.right.right) > 0:
-                self.right = self.right.right_rotate()
-            return self.left_rotate()
-        return self
 
-    def getHeight(self, node:"AVLtree") -> int:
+        Args:
+            node (AVLTreeNode): The node to balance.
+
+        Returns:
+            AVLTreeNode: The root of the balanced subtree.
         """
-        Returns the height of the given node in the AVL tree. If `None`, the height is 0.
-        
-        :param node: The node whose height is to be determined. 
+        node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
+        balance_factor = self.getHeight(node.left) - self.getHeight(node.right)
+        if balance_factor > 1:
+            if self.getHeight(node.left.left) - self.getHeight(node.left.right) < 0:
+                node.left = self._left_rotate(node.left)
+            return self._right_rotate(node)
+        elif balance_factor < -1:
+            if self.getHeight(node.right.left) - self.getHeight(node.right.right) > 0:
+                node.right = self._right_rotate(node.right)
+            return self._left_rotate(node)
+        return node
+
+    def getHeight(self, node: "AVLTreeNode") -> int:
+        """
+        Returns the height of the given node in the AVL tree.
+
+        Args:
+            node (AVLTreeNode): The node whose height is to be determined.
+
+        Returns:
+            int: The height of the node. If the node is `None`, returns 0.
         """
         if not node:
             return 0
         return node.height
 
-    def updateHeight(self, node: "AVLtree"):
+    def _updateHeight(self, node: "AVLTreeNode"):
         """
         Updates the height of the node.
 
-        :param node: Node the height of which will be updated.
+        Args:
+            node (AVLTreeNode): The node whose height is to be updated.
         """
-        node.height = 1 + max(self.getHeight(self.left), self.getHeight(self.right))
+        node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
 
-    def right_rotate(self) -> "AVLtree" :
-        result = self.left
+    def _right_rotate(self, node: "TreeNode") -> "AVLtree":
+        """
+        Performs a right rotation on the given node.
+
+        Args:
+            node (TreeNode): The node to rotate.
+
+        Returns:
+            TreeNode: The new root of the subtree after rotation.
+        """
+        result = node.left
         left_right_child = result.right
-        result.right = self
-        self.left = left_right_child
-        self.updateHeight(self)
-        self.updateHeight(result)
-        return result   
-    
-    def left_rotate(self) -> "AVLtree":
-        result = self.right
+        result.right = node
+        node.left = left_right_child
+        self._updateHeight(node)
+        self._updateHeight(result)
+        return result
+
+    def _left_rotate(self, node:"TreeNode") -> "AVLtree":
+        """
+        Performs a left rotation on the given node.
+
+        Args:
+            node (TreeNode): The node to rotate.
+
+        Returns:
+            TreeNode: The new root of the subtree after rotation.
+        """
+        result = node.right
         right_left_child = result.left
-        result.left = self
-        self.right = right_left_child
-        self.updateHeight(self)
-        self.updateHeight(result)
+        result.left = node
+        node.right = right_left_child
+        self._updateHeight(node)
+        self._updateHeight(result)
         return result
 
     def isBalanced(self) -> bool:
         """
         Checks whether the AVL tree is balanced.
 
-        Returns `True` if the tree is balanced, `False` otherwise.
+        Returns:
+            bool: `True` if the tree is balanced, `False` otherwise.
         """
-        stack = [self]
+        stack = [self.root]
         while stack:
             node = stack.pop()
-            balance_factor = self.getHeight(node.left) - self.getHeight(node.right) 
+            balance_factor = self.getHeight(node.left) - self.getHeight(node.right)
             if balance_factor > 1 or balance_factor < -1:
                 return False
             if node.left:
@@ -220,4 +362,3 @@ class AVLtree(TreeNode):
             if node.right:
                 stack.append(node.right)
         return True
-        
