@@ -131,6 +131,14 @@ class TestTreeNode(unittest.TestCase):
         self.assertEqual(self.empty_tree, empty_tree)
         self.assertNotEqual(self.single_node, tree2)
 
+    def test_repr(self):
+        self.assertEqual(repr(self.empty_tree), "{ None }")
+        self.assertEqual(repr(self.single_node), "{ 1:A (None) ^ [None] }")
+        self.assertEqual(
+            repr(self.tree), 
+            "{ 5:A (3:B (1:C (None) ^ [None]) ^ [4:D (None) ^ [None]]) ^ [8:E (None) ^ [9:F (None) ^ [None]]] }"
+            )
+
 
 def f(left_subtree = None, right_subtree = None, node_value = None):
     return (node_value or 'X') + (left_subtree or 'X') + (right_subtree or 'X')

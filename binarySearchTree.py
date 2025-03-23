@@ -4,6 +4,8 @@ from typing import Any, TypeVar, Union, Callable
 
 T = TypeVar("T")
 
+DEFAULT_COMPARATOR = lambda a, b: a - b
+
 class TreeNode:
     """
     A class representing a node in a tree structure.
@@ -46,12 +48,12 @@ class TreeNode:
         Returns a string representation of the tree node and its subtrees.
 
         The representation follows the format:
-            key (left_subtree) ^ [right_subtree]
+            key:value (left_subtree) ^ [right_subtree]
 
         Returns:
             str: A string representation of the tree node.
         """
-        return f"{self.key} ({self.left}) ^ [{self.right}]"
+        return f"{self.key}:{self.value} ({self.left}) ^ [{self.right}]"
 
     def __eq__(self: "TreeNode", root: "TreeNode") -> bool:
         """
@@ -295,7 +297,7 @@ class TreeRoot:
         if comparator:
             self.comparator = comparator
         else:
-            self.comparator = lambda a, b: a - b
+            self.comparator = DEFAULT_COMPARATOR
 
     def __iter__(self):
         """

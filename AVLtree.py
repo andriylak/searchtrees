@@ -1,4 +1,4 @@
-from binarySearchTree import TreeRoot, TreeNode
+from binarySearchTree import DEFAULT_COMPARATOR, TreeRoot, TreeNode
 from typing import Any, TypeVar, Union, Callable
 from functools import cmp_to_key, partial
 
@@ -70,16 +70,6 @@ class AVLtree(TreeRoot):
             comparator: A function to compare two keys.
         """
         super().__init__(root, comparator)
-        self.metaValue = None
-
-    def __repr__(self):
-        """
-        Returns a string representation of the AVL tree.
-
-        Returns:
-            str: A string representation of the tree.
-        """
-        return super().__repr__()
 
     def insert(self, new_key: T, new_value: T) -> "AVLtree":
         """
@@ -180,33 +170,35 @@ class AVLtree(TreeRoot):
         Returns:
             AVLtree: A new balanced AVL tree containing all key-value pairs from both input trees.
         """
-        in_order_1 = tree1.getInorder()
-        in_order_2 = tree2.getInorder()
-        if tree1.comparator != tree2.comparator:
-            custom_comparator = cmp_to_key(partial(first_element_comparator, tree1.comparator))
-            in_order_2 = sorted(tree2.getInorder(), key=custom_comparator)
-        if len(in_order_1) == 0 and len(in_order_2) == 0:
-            return AVLtree(comparator=tree1.comparator)
-        merged_list = self.mergeList(in_order_1, in_order_2, tree1.comparator)
-        return self.buildTheBalancedTree(merged_list, tree1.comparator)
+        merged_tree = AVLtree(comparator=tree1.comparator)
+        for (key, value) in tree1:
+            merged_tree.insert(key, value)
+        for (key, value) in tree2:
+            merged_tree.insert(key, value)
+        return merged_tree
 
-    def buildTheBalancedTree(self, sorted_array: list[tuple[T]], comparator:Callable[[T], int]) -> "AVLtree":
+    def buildTheBalancedTree(self, array: list[tuple[T]], comparator:Callable[[T], int] = DEFAULT_COMPARATOR, isSorted:bool = False) -> "AVLtree":
         """
         Constructs a balanced AVL tree from a sorted array of key-value pairs.
 
         Args:
-            sorted_array: A sorted list of tuples, where each tuple contains a key and its corresponding value.
+            array: A list of tuples, where each tuple contains a key and its corresponding value.
             comparator (Callable): The comparator function to use for key comparisons.
+            sorted(bool): Indicator, which tells whether the input is sorted according to comparator rules,
+              is False by default.
 
         Returns:
             AVLtree: The root of the newly constructed balanced AVL tree.
         """
-        start, end = 0, len(sorted_array) - 1
+        if not isSorted:
+            custom_comparator = cmp_to_key(partial(first_element_comparator, comparator))
+            array = sorted(array, key=custom_comparator)
+        start, end = 0, len(array) - 1
         middle = (start + end) // 2
         tree = AVLtree(comparator=comparator)
-        tree.root = AVLTreeNode(key=sorted_array[middle][0], value=sorted_array[middle][1])
-        tree.root.left = self._buildTheBalancedTree_helper(sorted_array, start, middle - 1)
-        tree.root.right = self._buildTheBalancedTree_helper(sorted_array, middle + 1, end)
+        tree.root = AVLTreeNode(key=array[middle][0], value=array[middle][1])
+        tree.root.left = self._buildTheBalancedTree_helper(array, start, middle - 1)
+        tree.root.right = self._buildTheBalancedTree_helper(array, middle + 1, end)
         self._updateHeight(tree.root)
         return tree
 

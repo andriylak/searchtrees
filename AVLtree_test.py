@@ -131,6 +131,38 @@ class TestAVLTree(unittest.TestCase):
             self.assertEqual(merged_tree.elementAccess(i), i + 1000)
 
         self.assertTrue(merged_tree.isBalanced())
+
+    def test_buildTheSingleNodeBalancedTree(self):
+        tree = AVLtree().buildTheBalancedTree([(1, "A")])                     #single node tree
+        self.assertEqual(tree.elementAccess(1), "A")
+        self.assertEqual(tree.size(), 1)
+    
+    def test_buildTreefromSortedList(self):
+        array = [(1, "A"), (2, "B"), (3, "C"), (4, "D"), (5, "E")]
+        tree = AVLtree().buildTheBalancedTree(array, isSorted=True)
+        for (key, value) in array:
+            self.assertEqual(tree.elementAccess(key), value)
+        self.assertTrue(tree.isBalanced())
+        self.assertEqual(tree.size(), 5)
+        self.assertEqual(tree.getInorder(), array)
+
+    def test_unsorted_array(self):
+        array = [(5, "E"), (2, "B"), (1, "A"), (4, "D"), (3, "C")]
+        tree = AVLtree().buildTheBalancedTree(array, comparator=COMPARATOR1)
+        for (key, value) in array:
+            self.assertEqual(tree.elementAccess(key), value)
+        self.assertTrue(tree.isBalanced())
+        self.assertEqual(tree.size(), 5)
+        self.assertEqual(tree.getInorder(), [(5, "E"), (4, "D"), (3, "C"), (2, "B"), (1, "A")])
+
+    def test_large_array(self):
+        array = [(i, chr(i)) for i in range(100)]
+        tree = AVLtree().buildTheBalancedTree(array)
+        for (key, value) in array:
+            self.assertEqual(tree.elementAccess(key), value)
+        self.assertTrue(tree.isBalanced())
+        self.assertEqual(tree.size(), 100)
+        self.assertEqual(tree.getInorder(), array)
             
 
 if __name__ == '__main__':

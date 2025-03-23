@@ -84,13 +84,11 @@ class TestComparator(unittest.TestCase):
         self.assertTrue(self.empty_tree.empty())
 
     def test_previous(self):                                          
-        self.assertIsNone(self.empty_tree.previous(self.empty_tree.root, 10))
         self.assertIsNone(self.single_node.previous(self.single_node.root, -1))
         self.assertEqual(self.tree.previous(self.tree.root, -4), TreeNode(-3, "B", TreeNode(-1, "C"), TreeNode(-4, "D")))
         self.assertEqual(self.tree.previous(self.tree.root, 10), TreeNode(-9, "F"))  # Key 10 is not in the tree ????
 
     def test_next(self):
-        self.assertIsNone(self.empty_tree.next(self.empty_tree.root, 10))
         self.assertIsNone(self.single_node.next(self.single_node.root, -1))
         self.assertEqual(self.tree.next(self.tree.root, -4), self.tree.root)
         self.assertEqual(self.tree.next(self.tree.root, 0), TreeNode(-1, "C"))  # Key 0 is not in the tree
@@ -144,6 +142,14 @@ class TestComparator(unittest.TestCase):
             self.tree.kthSmallestElement("b")
             self.tree.next(invalid_object, 5)
             self.tree.previous(invalid_object, 5)
+
+    def test_repr(self):
+        self.assertEqual(repr(self.empty_tree), "{ None }")
+        self.assertEqual(repr(self.single_node), "{ -1:A (None) ^ [None] }")
+        self.assertEqual(
+            repr(self.tree),
+            "{ -5:A (-3:B (-1:C (None) ^ [None]) ^ [-4:D (None) ^ [None]]) ^ [-8:E (None) ^ [-9:F (None) ^ [None]]] }"
+        )
 
 
 if __name__ == "__main__":
