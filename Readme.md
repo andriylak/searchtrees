@@ -20,7 +20,7 @@ Input: A series of tree operations
 -	InOrder()
 -	PostOrder()
 -	LevelOrder()
--	Merge(tree)
+-	Merge(tree1, tree2)
 -	Size()
 -	Empty()
 -	Clear()
