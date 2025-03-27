@@ -1,30 +1,36 @@
-﻿# Documentation for AVL Tree Implementation
+﻿# Documentation for Search Tree Library
 
 ## Introduction
 
 Search trees are foundational data structures that organize data in sorted order while maintaining efficient insertion, deletion, and lookup operations. These trees include binary (e.g., `AVL`, `red-black`, `treap`, `splay`) and non-binary (e. g. `2-3 tree`). The project aims to implement these types of trees and create Python library that provides a unified interface for operations on these tree types.
 
-So far, the project contains the `AVL tree` implementation, along with the superclasses `TreeNode` and `TreeRoot`, which include methods that are common to all binary trees.
+So far, the project contains the `AVL tree` implementation, along with the superclasses `_TreeNode` and `BinarySearchTree`, which include methods that are common to all binary trees.
+
+## How to use?
+To use this library, the user should keep the repository `SearchTrees` inside the project and import the required data structure.
+
 ## File Structure
 
 
 The project consists of two main files:
 
-1. **`binarySearchTree.py`**: This file contains the base classes `TreeNode` and `TreeRoot`, which provide the foundational structure for binary search trees. It includes methods for tree traversal, node manipulation, and basic tree operations.
+1. **`TreeNode.py`**: This file contains the base private class `_TreeNode`, which provide the foundational structure for binary search tree nodes. It includes methods for tree traversal, node manipulation, and basic tree operations.
 
-2. **`AVLtree.py`**: This file extends the `TreeNode` and `TreeRoot` classes from `binarySearchTree.py` to implement an AVL Tree. It includes methods for balancing the tree, inserting and deleting nodes, and merging trees.
+2. **`BinarySearchTree.py`**: This file contains the base class `BinarySearchTree`, which provide the configuration of binary search tree and the tree itself. It includes methods for tree traversal, node manipulation, and basic tree operations.
 
-3. **`binarySearchTree_test.py`**: This file contains `unittests` for classes `TreeNode` and `TreeRoot` with `DEFAULT_COMPARATOR`.
+3. **`AVLtree.py`**: This file extends the `_TreeNode` and `BinarySearchTree` classes from `binarySearchTree.py` to implement an AVL Tree. It includes methods for balancing the tree, inserting and deleting nodes, and merging trees.
 
-4. **`comparator_test`**: This file contains `unittests` for classes `TreeNode` and `TreeRoot` with `custom_comparator`.
+4. **`binarySearchTree_test.py`**: This file contains `unittests` for classes `_TreeNode` and `BinarySearchTree` with `DEFAULT_COMPARATOR`.
 
-5. **`AVLtree_test`**: This file contains `unittests` for `AVLtree` class, including balancing, insert, delete and merge operations.
+5. **`comparator_test`**: This file contains `unittests` for classes `_TreeNode` and `BinarySearchTree` with `custom_comparator`.
+
+6. **`AVLtree_test`**: This file contains `unittests` for `AVLtree` class, including balancing, insert, delete and merge operations.
 
 # Classes and Methods
 
-## `TreeNode` Class (from `binarySearchTree.py`)
+## `_TreeNode` Class (from `TreeNode.py`)
 
-The `TreeNode` class represents a node in a binary tree. Each node contains a key, a value, and references to its left and right children. It also includes optional metadata (`metaValue`), which is used for calculating auxiliary data in some node.
+The `_TreeNode` class represents a node in a binary tree. Each node contains a key, a value, and references to its left and right children. It also includes optional metadata (`metaValue`), which is used for calculating auxiliary data in some node.
 
 #### Attributes:
 - **key**: The key associated with the node. Defaults to None
@@ -57,9 +63,9 @@ key:value (left_subtree) ^ [right_subtree]
 ```
 **_Example_** of usage:
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 print(tree)
 # Output: 3:C (1:A (None) ^ [2:B]) ^ [5:E (4:D) ^ [None]]
 
@@ -68,16 +74,16 @@ print(tree)
 ---
 
 #### **`__eq__(node)`**  
-Compares two nodes for equality based on their keys. Returns `True` if the trees are identical, `False` otherwise.  Raises `TypeError` if `node` is not an instance of TreeNode.
+Compares two nodes for equality based on their keys. Returns `True` if the trees are identical, `False` otherwise.  Raises `TypeError` if `node` is not an instance of _TreeNode.
 
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root1 = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 root2 = T(3, value="q", left=T(1, value="w", right=T(2, value="e")), right=T(5, value="r", left=T(4, value="t")))
-tree1 = TreeRoot(root1)
-tree2 = TreeRoot(root2)
+tree1 = BinarySearchTree(root1)
+tree2 = BinarySearchTree(root2)
 print(tree1 == tree2)  # Output: True
 ```
 
@@ -90,7 +96,7 @@ print(tree1 == tree2)  # Output: True
 Generator. Performs a pre-order traversal of the tree. Yields each node in the tree in pre-order traversal (root → left subtree → right subtree).  
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 for node in root.preorder():
     print(node.key, end=" ")
@@ -103,7 +109,7 @@ for node in root.preorder():
 Generator. Performs an in-order traversal of the tree. Yields each node in the tree in in-order traversal (left subtree → root → right subtree).  
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 for node in root.inorder():
     print(node.key, end=" ")
@@ -117,7 +123,7 @@ Generator. Performs a reverse-order traversal of the tree. Yields each node in t
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 for node in root.reverseorder():
     print(node.key, end=" ")
@@ -131,7 +137,7 @@ Generator. Performs a post-order traversal of the tree. Yields each node in the 
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 for node in root.postorder():
     print(node.key, end=" ")
@@ -145,7 +151,7 @@ Generator. Performs a level-order traversal of the tree. Yields each node in the
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 for node in root.levelorder():
     print(node.key, end=" ")
@@ -165,7 +171,7 @@ Returns the k-th largest element in the tree. Raises `TypeError`, if `k` is not 
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 kth_largest = root.kthLargestElement(2)
 print(kth_largest.key)  # Output: 4
@@ -182,7 +188,7 @@ Returns the k-th smallest element in the tree. Raises `TypeError`, if `k` is not
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 kth_smallest = root.kthSmallestElement(3)
 print(kth_smallest.key)  # Output: 3
@@ -197,7 +203,7 @@ Returns the smallest key in the tree.
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 min_key = root.findmin()
 print(min_key)  # Output: 1
@@ -213,7 +219,7 @@ Returns the largest key in the tree.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 max_key = root.findmax()
 print(max_key)  # Output: 5
@@ -228,7 +234,7 @@ Returns the number of nodes in the tree.
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 tree_size = root.size()
 print(tree_size)  # Output: 5
@@ -237,12 +243,12 @@ print(tree_size)  # Output: 5
 ---
 
 
-## `TreeRoot` Class (from `binarySearchTree.py`)
+## `BinarySearchTree` Class (from `BinarySearchTree.py`)
 
-The `TreeRoot` class represents the root of a tree structure. It holds a reference to the root node and an optional comparator function for node comparisons and building the tree.
+The `BinarySearchTree` class represents the root of a tree structure. It holds a reference to the root node and an optional comparator function for node comparisons and building the tree.
 
 #### Attributes:
-- **root**: The root node of the tree. This attribute must be an instance of `TreeNode` or its subclass. Defaults to `None`.
+- **root**: The root node of the tree. This attribute must be an instance of `_TreeNode` or its subclass. Defaults to `None`.
 - **comparator**: A function to compare two keys. 
 
 #### Comparator
@@ -283,13 +289,13 @@ Constructor. Initializes a tree root with an optional root node and comparator f
 #### **`__iter__()`**  
 Returns an iterator that performs an in-order traversal of the tree. Yields (key, value) pairs for each node.  
 
-**Implementation**: Uses the implementation of `inorder()` traversal in `TreeNode` class.
+**Implementation**: Uses the implementation of `inorder()` traversal in `_TreeNode` class.
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 for key, value in tree:
     print(f"{key}:{value}", end=" ")
 # Output: 1:A 2:B 3:C 4:D 5:E
@@ -304,7 +310,7 @@ _**The representation follows the format**_:
 ```
 {tree.root} 
 ```
-But `tree.root` is an instance of `TreeNode`, so the output string would look like:
+But `tree.root` is an instance of `_TreeNode`, so the output string would look like:
 ```
 {key:value (left_subtree) ^ [right_subtree]}
 ```
@@ -314,9 +320,9 @@ But `tree.root` is an instance of `TreeNode`, so the output string would look li
 key:value (left_subtree) ^ [right_subtree] 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 print(tree)
 # Output: { 3:C (1:A (None) ^ [2:B]) ^ [5:E (4:D) ^ [None]] }
 ```
@@ -324,18 +330,18 @@ print(tree)
 ---
 
 #### **`__eq__(tree)`**  
-Compares two trees for equality based on their keys. Returns `True` if the trees are identical, `False` otherwise. Raises `TypeError` if `tree` is not an instance of TreeRoot.
+Compares two trees for equality based on their keys. Returns `True` if the trees are identical, `False` otherwise. Raises `TypeError` if `tree` is not an instance of BinarySearchTree.
 
-**Implementation**: Returns the result of comparison of `root` attributes of trees (instances of `TreeNode`)
+**Implementation**: Returns the result of comparison of `root` attributes of trees (instances of `_TreeNode`)
 
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root1 = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
 root2 = T(3, value="q", left=T(1, value="w", right=T(2, value="e")), right=T(5, value="r", left=T(4, value="t")))
-tree1 = TreeRoot(root1)
-tree2 = TreeRoot(root2)
+tree1 = BinarySearchTree(root1)
+tree2 = BinarySearchTree(root2)
 print(tree1 == tree2)  # Output: True
 ```
 
@@ -347,7 +353,7 @@ Returns the `_metaValue` of the key if the key exists, or `None` if the key does
 
 `target_key`: The key of the node for which the meta value will be calculated.
 
-`func`: A function that explains how to calculate the meta value for each node.
+`func`: A function that defines how to calculate the meta value for each node. It defaults to `DEFAULT_METAVALUE_FUNCTION`, which computes the sum of the subtree values along with the `target_node` value. 
 
 **Implementation**: Traverse the tree in `postorder()` traversal, and gradually find the value of all nodes below the `target_key`.
 
@@ -363,9 +369,9 @@ def f(left_subtree, right_subtree, node_value):
 **_Example_** of usage:
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 meta_value = tree.getMetaValue(3, lambda left, right, value: value.upper())
 print(meta_value)  # Output: C
 ```
@@ -380,9 +386,9 @@ Returns a list of (key, value) pairs in pre-order traversal.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 preorder = tree.getPreorder()
 print(preorder)  # Output: [(3, 'C'), (1, 'A'), (2, 'B'), (5, 'E'), (4, 'D')]
 ```
@@ -397,9 +403,9 @@ Returns a list of (key, value) pairs in in-order traversal.
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 inorder = tree.getInorder()
 print(inorder)  # Output: [(1, 'A'), (2, 'B'), (3, 'C'), (4, 'D'), (5, 'E')]
 ```
@@ -415,9 +421,9 @@ Returns a list of (key, value) pairs in reverse-order traversal.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 reverseorder = tree.getReverseorder()
 print(reverseorder)  # Output: [(5, 'E'), (4, 'D'), (3, 'C'), (2, 'B'), (1, 'A')]
 ```
@@ -433,9 +439,9 @@ Returns a list of (key, value) pairs in post-order traversal.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 postorder = tree.getPostorder()
 print(postorder)  # Output: [(2, 'B'), (1, 'A'), (4, 'D'), (5, 'E'), (3, 'C')]
 ```
@@ -451,9 +457,9 @@ Returns a list of (key, value) pairs in level-order traversal.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 levelorder = tree.getLevelorder()
 print(levelorder)  # Output: [(3, 'C'), (1, 'A'), (5, 'E'), (2, 'B'), (4, 'D')]
 ```
@@ -469,9 +475,9 @@ Deletes all nodes from the tree.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 tree.clear()
 print(tree.empty())  # Output: True
 ```
@@ -482,13 +488,13 @@ print(tree.empty())  # Output: True
 
 Returns the number of nodes in the tree.  
 
-**Implementation**: calls the `size` method on `root` attribute (an instance of `TreeNode`).
+**Implementation**: calls the `size` method on `root` attribute (an instance of `_TreeNode`).
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 print(tree.size())  # Output: 5
 ```
 
@@ -502,7 +508,7 @@ Returns `True` if the tree is empty.
 **_Example_** of usage:  
 
 ```python
-tree = TreeRoot()
+tree = BinarySearchTree()
 print(tree.empty())  # Output: True
 ```
 
@@ -519,9 +525,9 @@ Returns the value of a key if it exists. Raises `KeyError` if the given key does
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 value = tree.elementAccess(2)
 print(value)  # Output: B
 ```
@@ -539,9 +545,9 @@ Returns the node with the specified key or None if the node does not exist.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 node = tree.find(4)
 print(node.key, node.value)  # Output: 4 D
 ```
@@ -558,9 +564,9 @@ Returns the k-th largest element in the tree. Raises `TypeError`, if `k` is not 
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 kth_largest = tree.kthLargestElement(2)
 print(kth_largest.key)  # Output: 4
 ```
@@ -577,9 +583,9 @@ Returns the k-th smallest element in the tree. Raises `TypeError`, if `k` is not
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 kth_smallest = tree.kthSmallestElement(3)
 print(kth_smallest.key)  # Output: 3
 ```
@@ -594,9 +600,9 @@ Returns the smallest key in the tree.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 min_key = tree.findmin()
 print(min_key)  # Output: 1
 ```
@@ -612,9 +618,9 @@ Returns the largest key in the tree.
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 max_key = tree.findmax()
 print(max_key)  # Output: 5
 ```
@@ -622,20 +628,20 @@ print(max_key)  # Output: 5
 ---
 
 #### **`previous(node, target)`**  
-`node` (TreeNode): The root of a tree or subtree in which the predecessor is to be found.
+`node` (_TreeNode): The root of a tree or subtree in which the predecessor is to be found.
 
 `target`: The key for which the in-order predecessor is to be found.
 
-Returns `TreeNode` which is the in-order predecessor of the `target` key, or `None` if the key is already a minimum.Raises `TypeError` if `node` is not an instance of `TreeNode` or its subclass.
+Returns `_TreeNode` which is the in-order predecessor of the `target` key, or `None` if the key is already a minimum.Raises `TypeError` if `node` is not an instance of `_TreeNode` or its subclass.
 
 **Implementation**: finds the predecessor node using rules of BST construction.
 
 **_Example_** of usage:  
 
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 predecessor = tree.previous(root, 4)
 print(predecessor.key)  # Output: 3
 ```
@@ -643,19 +649,19 @@ print(predecessor.key)  # Output: 3
 ---
 
 #### **`next(node, target)`**  
-`node` (TreeNode): The root of a tree or subtree in which the successor is to be found.
+`node` (_TreeNode): The root of a tree or subtree in which the successor is to be found.
 
 `target`: The key for which the in-order successor is to be found.
 
-Returns the in-order successor of the `target` key, or `None` if the key is a maximum. Raises `TypeError` if `node` is not an instance of `TreeNode` or its subclass.
+Returns the in-order successor of the `target` key, or `None` if the key is a maximum. Raises `TypeError` if `node` is not an instance of `_TreeNode` or its subclass.
 
 **Implementation**: finds the successor node using rules of BST construction.
 
 **_Example_** of usage:  
 ```python
-T = TreeNode
+T = _TreeNode
 root = T(3, value="C", left=T(1, value="A", right=T(2, value="B")), right=T(5, value="E", left=T(4, value="D")))
-tree = TreeRoot(root)
+tree = BinarySearchTree(root)
 successor = tree.next(root, 2)
 print(successor.key)  # Output: 3
 ```
@@ -663,9 +669,9 @@ print(successor.key)  # Output: 3
 ---
 
 
-## `AVLTreeNode` Class (from `AVLtree.py`)
+## `AVL_TreeNode` Class (from `AVLtree.py`)
 
-The `AVLTreeNode` class extends the `TreeNode` class to include height information for balancing in an AVL Tree.
+The `AVL_TreeNode` class extends the `_TreeNode` class to include height information for balancing in an AVL Tree.
 
 #### Attributes:
 - **height**: The height of the node in the AVL tree.
@@ -676,7 +682,7 @@ Constructor. Initializes an AVL tree node with a key, value, height and optional
 
 ### `AVLtree` Class (from `AVLtree.py`)
 
-The `AVLtree` class extends the `TreeRoot` class to provide AVL tree functionality, including insertion, deletion, merging and balancing operations.
+The `AVLtree` class extends the `BinarySearchTree` class to provide AVL tree functionality, including insertion, deletion, merging and balancing operations.
 
 #### Methods:
 Here’s the rewritten documentation for the `AVLtree` class methods, following the same style as before. Each method includes a description, example usage, and expected output, using the **same tree structure** for consistency:
@@ -790,7 +796,7 @@ print(avl_tree.getInorder())
 Returns the height attribute of the given node. 
 
 
-`node` (AVLTreeNode): The node whose height is to be determined.
+`node` (AVL_TreeNode): The node whose height is to be determined.
 
 **Implementation**: returns the `height` attribute of the `node`.
 
@@ -836,3 +842,6 @@ print(avl_tree.isBalanced())
 - **`_left_rotate`**: Performs a left rotation on the given node.
 - **`_buildTheBalancedTree_helper`**: Helper method for building a balanced AVL tree from a sorted array.
 - **`mergeList`**: Static method, which merges two sorted lists of key-value pairs into a single sorted list.
+
+## Future of the project
+Currently, only AVL trees have been implemented. Future updates aim to include all data structures mentioned in the introduction.
