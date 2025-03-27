@@ -1,13 +1,14 @@
 import unittest
-from binarySearchTree import TreeNode, TreeRoot 
+from BinarySearchTree import BinarySearchTree 
+from TreeNode import _TreeNode
 
-class TestTreeNode(unittest.TestCase):
+class Test_TreeNode(unittest.TestCase):
 
     def setUp(self):
-        T = TreeNode
-        self.empty_tree = TreeRoot()
-        self.single_node = TreeRoot(root = T(1, value="A"))
-        self.tree = TreeRoot(root =T(5, "A", T(3, "B", T(1, "C"), T(4, "D")), T(8, "E", None, T(9, "F"))))
+        T = _TreeNode
+        self.empty_tree = BinarySearchTree()
+        self.single_node = BinarySearchTree(root = T(1, value="A"))
+        self.tree = BinarySearchTree(root =T(5, "A", T(3, "B", T(1, "C"), T(4, "D")), T(8, "E", None, T(9, "F"))))
 
     def test_pre_order(self):
         self.assertEqual(self.empty_tree.getPreorder(), [])
@@ -35,8 +36,8 @@ class TestTreeNode(unittest.TestCase):
         self.assertEqual(self.tree.getLevelorder(), [(5, "A"), (3, "B"), (8, "E"), (1, "C"), (4, "D"), (9, "F")])
     
     def test_find_existing_key(self):
-        self.assertEqual(self.single_node.find(1), TreeNode(1))
-        self.assertEqual(self.tree.find(3), TreeNode(3, "A", TreeNode(1), TreeNode(4))) 
+        self.assertEqual(self.single_node.find(1), _TreeNode(1))
+        self.assertEqual(self.tree.find(3), _TreeNode(3, "A", _TreeNode(1), _TreeNode(4))) 
 
     def test_find_non_existing_key(self):
         self.assertIsNone(self.empty_tree.find(10))
@@ -73,13 +74,13 @@ class TestTreeNode(unittest.TestCase):
         
     def test_previous(self):
         self.assertIsNone(self.single_node.previous(self.single_node.root, 1))
-        self.assertEqual(self.tree.previous(self.tree.root,  4), TreeNode(3, "A", TreeNode(1), TreeNode(4)))  
-        self.assertEqual(self.tree.previous(self.tree.root, 10), TreeNode(9))                        #the key 10 is not in the tree
+        self.assertEqual(self.tree.previous(self.tree.root,  4), _TreeNode(3, "A", _TreeNode(1), _TreeNode(4)))  
+        self.assertEqual(self.tree.previous(self.tree.root, 10), _TreeNode(9))                        #the key 10 is not in the tree
  
     def test_next(self):
         self.assertIsNone(self.single_node.next(self.single_node.root, 1))
         self.assertEqual(self.tree.next(self.tree.root, 4), self.tree.root)  
-        self.assertEqual(self.tree.next(self.tree.root, 0), TreeNode(1))                             #the key 0 is not in the tree
+        self.assertEqual(self.tree.next(self.tree.root, 0), _TreeNode(1))                             #the key 0 is not in the tree
 
     def test_kth_element(self):
         self.assertIsNone(self.empty_tree.kthLargestElement(10))
@@ -89,7 +90,7 @@ class TestTreeNode(unittest.TestCase):
     def test_kth_smallest_element(self):
         self.assertIsNone(self.empty_tree.kthSmallestElement(10))
         self.assertEqual(self.single_node.kthSmallestElement(1), self.single_node.root)
-        self.assertEqual(self.tree.kthSmallestElement(3), TreeNode(4))
+        self.assertEqual(self.tree.kthSmallestElement(3), _TreeNode(4))
 
     def test_element_access(self):
         self.assertEqual(self.single_node.elementAccess(1), "A")      
@@ -121,10 +122,10 @@ class TestTreeNode(unittest.TestCase):
         self.assertEqual([(key, value) for key, value in self.tree], [(1, 'C'), (3, 'B'), (4, 'D'), (5, 'A'), (8, 'E'), (9, 'F')])
 
     def test_eq(self):
-        T = TreeNode
-        tree1 = TreeRoot(root =T(5, "A", T(3, "B", T(1, "C"), T(4, "D")), T(8, "E", None, T(9, "F"))))
-        empty_tree = TreeRoot()
-        tree2 = TreeRoot(T(2))
+        T = _TreeNode
+        tree1 = BinarySearchTree(root =T(5, "A", T(3, "B", T(1, "C"), T(4, "D")), T(8, "E", None, T(9, "F"))))
+        empty_tree = BinarySearchTree()
+        tree2 = BinarySearchTree(T(2))
         self.assertEqual(tree1, self.tree)
         self.assertNotEqual(tree1, self.single_node)
         self.assertNotEqual(tree1, self.empty_tree)
@@ -140,7 +141,7 @@ class TestTreeNode(unittest.TestCase):
             )
 
 
-def f(left_subtree = None, right_subtree = None, node_value = None):
+def f(left_subtree, right_subtree, node_value):
     return (node_value or 'X') + (left_subtree or 'X') + (right_subtree or 'X')
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
-from binarySearchTree import DEFAULT_COMPARATOR, TreeRoot, TreeNode
+from BinarySearchTree import DEFAULT_COMPARATOR, BinarySearchTree
+from TreeNode import _TreeNode
 from typing import Any, TypeVar, Union, Callable
 from functools import cmp_to_key, partial
 
@@ -11,11 +12,11 @@ def first_element_comparator(comparator: Callable[[T], int], a: tuple, b: tuple)
      """
      return comparator(a[0], b[0])
 
-class AVLTreeNode(TreeNode):
+class _AVLTreeNode(_TreeNode):
     """
     A class representing a node in an AVL tree.
 
-    This class extends the TreeNode class to include height information for balancing.
+    This class extends the _TreeNode class to include height information for balancing.
 
     Attributes:
         key: The key of the node.
@@ -29,8 +30,8 @@ class AVLTreeNode(TreeNode):
         self,
         key: Union[T , None] = None,
         value: Union [T , None] = None,
-        left: Union["TreeNode" , None] = None,
-        right: Union["TreeNode" , None] = None,
+        left: Union["_TreeNode" , None] = None,
+        right: Union["_TreeNode" , None] = None,
     ):
         """
         Initialize an AVL tree node.
@@ -44,7 +45,7 @@ class AVLTreeNode(TreeNode):
         super().__init__(key, value, left, right)
         self.height = 1
 
-class AVLtree(TreeRoot):
+class AVLtree(BinarySearchTree):
     """
     A class representing an AVL tree, a self-balancing binary search tree.
 
@@ -52,12 +53,12 @@ class AVLtree(TreeRoot):
     insertion, deletion, and balancing operations.
 
     Attributes:
-        root (Union[TreeNode, None]): The root node of the AVL tree.
+        root (Union[_TreeNode, None]): The root node of the AVL tree.
         comparator (Callable[[T], int]): A function to compare two keys.
         metaValue (Any): Optional metadata associated with the tree.
     """
 
-    def __init__(self, root: Union["TreeNode", None] = None, comparator: Callable[[T], int] | None = None):
+    def __init__(self, root: Union["_TreeNode", None] = None, comparator: Callable[[T], int] | None = None):
         """
         Initialize an AVL tree.
 
@@ -79,24 +80,24 @@ class AVLtree(TreeRoot):
             AVLtree: The root of the balanced AVL tree after insertion.
         """
         if self.empty():
-            self.root = AVLTreeNode(new_key, new_value)
+            self.root = _AVLTreeNode(new_key, new_value)
         else:
             self.root = self._insert_recursive(self.root, new_key, new_value)
     
-    def _insert_recursive(self, node: "TreeNode", new_key: T, new_value: T) -> "AVLTreeNode":
+    def _insert_recursive(self, node: "_TreeNode", new_key: T, new_value: T) -> "_AVLTreeNode":
         """
         Helper method. Recursively inserts a new key-value pair into the AVL tree.
 
         Args:
-            node (AVLTreeNode): The current node in the recursion.
+            node (_AVLTreeNode): The current node in the recursion.
             new_key: The key of the new node.
             new_value: The value of the new node.
 
         Returns:
-            AVLTreeNode: The root of the balanced subtree after insertion.
+            _AVLTreeNode: The root of the balanced subtree after insertion.
         """
         if not node:
-            return AVLTreeNode(new_key, new_value)
+            return _AVLTreeNode(new_key, new_value)
         elif self.comparator(node.key, new_key) == 0:
             return node
         elif self.comparator(node.key, new_key) > 0:
@@ -120,16 +121,16 @@ class AVLtree(TreeRoot):
         else:
             self.root = self._delete_recursive(self.root, key)
 
-    def _delete_recursive(self, node: "TreeNode", key: T) -> "AVLTreeNode":
+    def _delete_recursive(self, node: "_TreeNode", key: T) -> "_AVLTreeNode":
         """
         Recursively deletes a node with the specified key from the AVL tree.
 
         Args:
-            node (AVLTreeNode): The current node in the recursion.
+            node (_AVLTreeNode): The current node in the recursion.
             key: The key of the node to be deleted.
 
         Returns:
-            TreeNode: The root of the balanced subtree after deletion.
+            _TreeNode: The root of the balanced subtree after deletion.
         """
         if not node:
             return node
@@ -193,13 +194,13 @@ class AVLtree(TreeRoot):
         start, end = 0, len(array) - 1
         middle = (start + end) // 2
         tree = AVLtree(comparator=comparator)
-        tree.root = AVLTreeNode(key=array[middle][0], value=array[middle][1])
+        tree.root = _AVLTreeNode(key=array[middle][0], value=array[middle][1])
         tree.root.left = self._buildTheBalancedTree_helper(array, start, middle - 1)
         tree.root.right = self._buildTheBalancedTree_helper(array, middle + 1, end)
         self._updateHeight(tree.root)
         return tree
 
-    def _buildTheBalancedTree_helper(self, sorted_array: list[tuple[T]], start: int, end: int) -> "AVLTreeNode":
+    def _buildTheBalancedTree_helper(self, sorted_array: list[tuple[T]], start: int, end: int) -> "_AVLTreeNode":
         """
         Helper method for building a balanced AVL tree from a sorted array.
 
@@ -209,12 +210,12 @@ class AVLtree(TreeRoot):
             end (int): The ending index of the current range in the sorted array.
 
         Returns:
-            AVLTreeNode: The root of the balanced subtree.
+            _AVLTreeNode: The root of the balanced subtree.
         """
         if start > end:
             return None
         middle = (start + end) // 2
-        node = AVLTreeNode(key=sorted_array[middle][0], value=sorted_array[middle][1])
+        node = _AVLTreeNode(key=sorted_array[middle][0], value=sorted_array[middle][1])
         node.left = self._buildTheBalancedTree_helper(sorted_array, start, middle - 1)
         node.right = self._buildTheBalancedTree_helper(sorted_array, middle + 1, end)
         self._updateHeight(node)
@@ -252,15 +253,15 @@ class AVLtree(TreeRoot):
             result = result + array2[j:]
         return result
 
-    def _balance(self, node: "AVLTreeNode") -> "AVLTreeNode":
+    def _balance(self, node: "_AVLTreeNode") -> "_AVLTreeNode":
         """
         Balances the AVL tree at the current node.
 
         Args:
-            node (AVLTreeNode): The node to balance.
+            node (_AVLTreeNode): The node to balance.
 
         Returns:
-            AVLTreeNode: The root of the balanced subtree.
+            _AVLTreeNode: The root of the balanced subtree.
         """
         node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
         balance_factor = self.getHeight(node.left) - self.getHeight(node.right)
@@ -274,12 +275,12 @@ class AVLtree(TreeRoot):
             return self._left_rotate(node)
         return node
 
-    def getHeight(self, node: "AVLTreeNode") -> int:
+    def getHeight(self, node: "_AVLTreeNode") -> int:
         """
         Returns the height of the given node in the AVL tree.
 
         Args:
-            node (AVLTreeNode): The node whose height is to be determined.
+            node (_AVLTreeNode): The node whose height is to be determined.
 
         Returns:
             int: The height of the node. If the node is `None`, returns 0.
@@ -288,24 +289,24 @@ class AVLtree(TreeRoot):
             return 0
         return node.height
 
-    def _updateHeight(self, node: "AVLTreeNode"):
+    def _updateHeight(self, node: "_AVLTreeNode"):
         """
         Updates the height of the node.
 
         Args:
-            node (AVLTreeNode): The node whose height is to be updated.
+            node (_AVLTreeNode): The node whose height is to be updated.
         """
         node.height = 1 + max(self.getHeight(node.left), self.getHeight(node.right))
 
-    def _right_rotate(self, node: "TreeNode") -> "AVLtree":
+    def _right_rotate(self, node: "_TreeNode") -> "AVLtree":
         """
         Performs a right rotation on the given node.
 
         Args:
-            node (TreeNode): The node to rotate.
+            node (_TreeNode): The node to rotate.
 
         Returns:
-            TreeNode: The new root of the subtree after rotation.
+            _TreeNode: The new root of the subtree after rotation.
         """
         result = node.left
         left_right_child = result.right
@@ -315,15 +316,15 @@ class AVLtree(TreeRoot):
         self._updateHeight(result)
         return result
 
-    def _left_rotate(self, node:"TreeNode") -> "AVLtree":
+    def _left_rotate(self, node:"_TreeNode") -> "AVLtree":
         """
         Performs a left rotation on the given node.
 
         Args:
-            node (TreeNode): The node to rotate.
+            node (_TreeNode): The node to rotate.
 
         Returns:
-            TreeNode: The new root of the subtree after rotation.
+            _TreeNode: The new root of the subtree after rotation.
         """
         result = node.right
         right_left_child = result.left

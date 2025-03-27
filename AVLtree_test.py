@@ -1,4 +1,4 @@
-from AVLtree import AVLtree, TreeNode
+from AVLtree import AVLtree
 import unittest
 
 COMPARATOR1 = lambda a, b: b - a 

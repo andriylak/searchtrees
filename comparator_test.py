@@ -1,5 +1,6 @@
 import unittest
-from binarySearchTree import TreeNode, TreeRoot 
+from BinarySearchTree import BinarySearchTree 
+from TreeNode import _TreeNode
 
 comparator = lambda a, b: abs(a) - abs(b)
 
@@ -11,10 +12,10 @@ def f(left_subtree = None, right_subtree = None, node_value = None):
 
 class TestComparator(unittest.TestCase):
     def setUp(self):
-        T = TreeNode
-        self.empty_tree = TreeRoot(comparator=comparator)
-        self.single_node = TreeRoot(root = T(-1, value="A"), comparator=comparator)
-        self.tree = TreeRoot(root = T(-5, "A", 
+        T = _TreeNode
+        self.empty_tree = BinarySearchTree(comparator=comparator)
+        self.single_node = BinarySearchTree(root = T(-1, value="A"), comparator=comparator)
+        self.tree = BinarySearchTree(root = T(-5, "A", 
                   left=T(-3, "B", T(-1, "C"), T(-4, "D")), 
                   right=T(-8, "E", None, T(-9, "F"))), comparator=comparator)
 
@@ -45,8 +46,8 @@ class TestComparator(unittest.TestCase):
 
     def test_find_existing_key(self):
         func = lambda a, b: abs(a) - abs(b)
-        self.assertEqual(self.single_node.find(-1), TreeNode(-1, "A"))
-        self.assertEqual(self.tree.find(-1), TreeNode(-1, "C"))
+        self.assertEqual(self.single_node.find(-1), _TreeNode(-1, "A"))
+        self.assertEqual(self.tree.find(-1), _TreeNode(-1, "C"))
 
     def test_find_non_existing_key(self):
         self.assertIsNone(self.empty_tree.find(10))
@@ -85,23 +86,23 @@ class TestComparator(unittest.TestCase):
 
     def test_previous(self):                                          
         self.assertIsNone(self.single_node.previous(self.single_node.root, -1))
-        self.assertEqual(self.tree.previous(self.tree.root, -4), TreeNode(-3, "B", TreeNode(-1, "C"), TreeNode(-4, "D")))
-        self.assertEqual(self.tree.previous(self.tree.root, 10), TreeNode(-9, "F"))  # Key 10 is not in the tree ????
+        self.assertEqual(self.tree.previous(self.tree.root, -4), _TreeNode(-3, "B", _TreeNode(-1, "C"), _TreeNode(-4, "D")))
+        self.assertEqual(self.tree.previous(self.tree.root, 10), _TreeNode(-9, "F"))  # Key 10 is not in the tree ????
 
     def test_next(self):
         self.assertIsNone(self.single_node.next(self.single_node.root, -1))
         self.assertEqual(self.tree.next(self.tree.root, -4), self.tree.root)
-        self.assertEqual(self.tree.next(self.tree.root, 0), TreeNode(-1, "C"))  # Key 0 is not in the tree
+        self.assertEqual(self.tree.next(self.tree.root, 0), _TreeNode(-1, "C"))  # Key 0 is not in the tree
 
     def test_kth_element(self): 
         self.assertIsNone(self.empty_tree.kthLargestElement(10))
-        self.assertEqual(self.single_node.kthLargestElement(1), TreeNode(-1, "A"))
+        self.assertEqual(self.single_node.kthLargestElement(1), _TreeNode(-1, "A"))
         self.assertEqual(self.tree.kthLargestElement(3), self.tree.root)  # 3rd largest element
 
     def test_kth_smallest_element(self):
         self.assertIsNone(self.empty_tree.kthSmallestElement(10))
         self.assertEqual(self.single_node.kthSmallestElement(1), self.single_node.root)
-        self.assertEqual(self.tree.kthSmallestElement(3), TreeNode(-4, "D"))
+        self.assertEqual(self.tree.kthSmallestElement(3), _TreeNode(-4, "D"))
 
     def test_element_access(self):
         self.assertEqual(self.single_node.elementAccess(-1), "A")
@@ -121,11 +122,11 @@ class TestComparator(unittest.TestCase):
         self.assertEqual([(key, value) for key, value in self.tree], [(-1, "C"), (-3, "B"), (-4, "D"), (-5, "A"), (-8, "E"), (-9, "F")])
 
     def test_eq(self):
-        T = TreeNode
-        tree1 = TreeRoot(root = T(-5, "A", 
+        T = _TreeNode
+        tree1 = BinarySearchTree(root = T(-5, "A", 
                   left=T(-3, "B", T(-1, "C"), T(-4, "D")), 
                   right=T(-8, "E", None, T(-9, "F"))), comparator=comparator)
-        empty_tree = TreeRoot(comparator=comparator)
+        empty_tree = BinarySearchTree(comparator=comparator)
         self.assertEqual(tree1, self.tree)
         self.assertNotEqual(tree1, self.single_node)
         self.assertNotEqual(tree1, self.empty_tree)
